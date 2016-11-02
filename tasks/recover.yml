@@ -1,0 +1,59 @@
+---
+#   Copyright Red Hat, Inc. All Rights Reserved.
+#
+#   Licensed under the Apache License, Version 2.0 (the "License"); you may
+#   not use this file except in compliance with the License. You may obtain
+#   a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#   WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#   License for the specific language governing permissions and limitations
+#   under the License.
+#
+
+- name: Run global debug commands and capture output
+  shell: "{{ item.value.command }} >{{ weirdo_logdir }}/{{ item.key }}.txt"
+  args:
+    creates: "{{ weirdo_logdir }}/{{ item.key }}.txt"
+  with_dict: "{{ weirdo_debug_commands }}"
+  ignore_errors: True
+
+- name: Output hostvars to file
+  copy:
+    content: "{{ hostvars[inventory_hostname] |to_nice_json }}"
+    dest: "{{ weirdo_logdir }}/ansible_hostvars.txt"
+  ignore_errors: True
+
+- name: Copy existing system logs to central folder
+  synchronize:
+    src: "{{ item }}"
+    dest: "{{ weirdo_logdir }}/"
+  delegate_to: "{{ inventory_hostname }}"
+  with_items: "{{ weirdo_system_logpaths }}"
+  ignore_errors: True
+
+- name: Copy project logs to central folder
+  synchronize:
+    src: "{{ weirdo_project_logdir }}"
+    dest: "{{ weirdo_logdir }}/"
+  delegate_to: "{{ inventory_hostname }}"
+  ignore_errors: True
+
+- name: Convert files to .txt (web mime type)
+  shell: |
+    for file in $(find {{ weirdo_logdir }} -name "*.{{ item }}"); do
+      mv $file ${file/.{{ item }}/.txt}
+    done
+  with_items:
+    - log
+    - conf
+    - fact
+  ignore_errors: True
+
+- name: Compress all files
+  shell: |
+    find {{ weirdo_logdir }} -type f -name "*.txt" -execdir gzip -f -9 {} \+
+  ignore_errors: True
