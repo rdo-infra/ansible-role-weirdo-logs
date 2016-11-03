@@ -35,10 +35,7 @@
   ignore_errors: True
 
 - name: Copy project logs to central folder
-  synchronize:
-    src: "{{ weirdo_project_logdir }}"
-    dest: "{{ weirdo_logdir }}/"
-  delegate_to: "{{ inventory_hostname }}"
+  command: "rsync -azr {{ weirdo_project_logdir }} {{ weirdo_logdir }}/"
   ignore_errors: True
 
 - name: Convert files to .txt (web mime type)
