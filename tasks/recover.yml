@@ -28,10 +28,9 @@
   ignore_errors: True
 
 - name: Copy existing system logs to central folder
-  synchronize:
-    src: "{{ item }}"
-    dest: "{{ weirdo_logdir }}/"
-  delegate_to: "{{ inventory_hostname }}"
+  command: "rsync -azr {{ item }} {{ weirdo_logdir }}/"
+  args:
+    creates: "{{ weirdo_logdir }}/{{ item }}"
   with_items: "{{ weirdo_system_logpaths }}"
   ignore_errors: True
 
