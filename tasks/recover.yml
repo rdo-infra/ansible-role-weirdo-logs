@@ -53,3 +53,10 @@
   shell: |
     find {{ weirdo_logdir }} -type f -name "*.txt" -execdir gzip -f -9 {} \+
   ignore_errors: True
+
+- name: Ensure permissions allow for readability
+  shell: "{{ item }}"
+  with_items:
+    - find {{ weirdo_logdir }} -type d -execdir chmod 755 '{}' \;
+    - find {{ weirdo_logdir }} -type f -execdir chmod 644 '{}' \;
+    - chown -R "$(id -u):$(id -g)" {{ weirdo_logdir }}
