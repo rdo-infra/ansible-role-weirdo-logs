@@ -74,3 +74,5 @@ weirdo_debug_commands:
     command: "uname -a"
   rdo-trunk-deps-end:
     command: "repoquery --plugins --disablerepo='*' --enablerepo='delorean' --enablerepo='delorean*testing' -a --qf '%{sourcerpm}'|sort -u|sed 's/.src.rpm//g'"
+  pipfreeze:
+    command: "pip freeze"
