@@ -25,7 +25,8 @@ weirdo_system_logpaths:
     - /var/log/audit
     - /etc/modprobe.d
 
-pkg_mgr: "{% if ansible_distribution == 'Fedora' %}dnf{% else %}yum{% endif %}"
+pip_executable: "pip{% if ansible_distribution == 'CentOS' and ansible_distribution_major_version|int >= 8 %}3{% else %}2{% endif %}"
+repoquery_cmd: "repoquery {% if ansible_distribution == 'CentOS' and ansible_distribution_major_version|int < 8 %}--plugins{% else %}{% endif %}"
 
 # Base WeIRDO debug commands to get insight on the system regardless of project
 # logging implementation
@@ -69,12 +70,12 @@ weirdo_debug_commands:
   sysctl:
     command: "sysctl -a"
   repolist:
-    command: "{{ pkg_mgr }} repolist -v"
+    command: "{{ ansible_pkg_mgr }} repolist -v"
   rpm_packages:
     command: "rpm -qa | sort"
   uname:
     command: "uname -a"
   rdo-trunk-deps-end:
-    command: "repoquery --plugins --disablerepo='*' --enablerepo='delorean' --enablerepo='delorean*testing' -a --qf '%{sourcerpm}'|sort -u|sed 's/.src.rpm//g'"
+    command: "{{ repoquery_cmd }} --disablerepo='*' --enablerepo='delorean' --enablerepo='delorean*testing' -a --qf '%{sourcerpm}'|sort -u|sed 's/.src.rpm//g'"
   pipfreeze:
-    command: "pip freeze"
+    command: "{{ pip_executable }} freeze"
