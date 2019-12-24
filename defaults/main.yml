@@ -25,8 +25,6 @@ weirdo_system_logpaths:
     - /var/log/audit
     - /etc/modprobe.d
 
-pkg_mgr: "{% if ansible_distribution == 'Fedora' %}dnf{% else %}yum{% endif %}"
-
 # Base WeIRDO debug commands to get insight on the system regardless of project
 # logging implementation
 weirdo_debug_commands:
@@ -69,7 +67,7 @@ weirdo_debug_commands:
   sysctl:
     command: "sysctl -a"
   repolist:
-    command: "{{ pkg_mgr }} repolist -v"
+    command: "{{ ansible_pkg_mgr }} repolist -v"
   rpm_packages:
     command: "rpm -qa | sort"
   uname:
