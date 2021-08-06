@@ -43,6 +43,8 @@ weirdo_debug_commands:
     command: "getenforce"
   hosts:
     command: "cat /etc/hosts"
+  ip:
+    command: "ip a"
   iptables:
     command: "iptables -vnL"
   iptables_nat:
