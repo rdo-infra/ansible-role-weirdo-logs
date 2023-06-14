@@ -24,6 +24,8 @@ weirdo_project_logdir: "/var/log/weirdo-project"
 weirdo_system_logpaths:
     - /var/log/audit
     - /etc/modprobe.d
+    - /root/.ansible/logs
+    - /tmp/openstack-ansible/.tox
 
 pip_executable: "pip{% if ansible_distribution == 'CentOS' and ansible_distribution_major_version|int >= 8 %}3{% else %}2{% endif %}"
 repoquery_cmd: "repoquery {% if ansible_distribution == 'CentOS' and ansible_distribution_major_version|int < 8 %}--plugins{% else %}{% endif %}"
